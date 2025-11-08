@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if current_user %}
+    <div>
+        <h2>Новое сообщение</h2>
+        <form action="{{ url_for('new_message') }}" method="post">
+            <textarea name="text" placeholder="Ваше сообщение..." required></textarea>
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div>
+        <h2>Сообщения</h2>
+        {% for message in messages %}
+        <div class="message">
+            <strong>{{ message.user.username }}</strong>
+            <small>{{ message.created_at }}</small>
+            <p>{{ message.text }}</p>
+
+            {% if current_user and current_user.id == message.user_id %}
+            <a href="{{ url_for('delete_message', message_id=message.id) }}">Удалить</a>
+            {% endif %}
+
+            <!-- Форма ответа -->
+            {% if current_user %}
+            <form action="{{ url_for('reply_message', message_id=message.id) }}" method="post">
+                <textarea name="text" placeholder="Ответить..." required></textarea>
+                <button type="submit">Ответить</button>
+            </form>
+            {% endif %}
+
+            <!-- Показываем ответы -->
+            {% for reply in message.replies %}
+            <div class="reply" style="margin-left: 20px;">
+                <strong>{{ reply.user.username }}</strong>
+                <small>{{ reply.created_at }}</small>
+                <p>{{ reply.text }}</p>
+
+                {% if current_user and current_user.id == reply.user_id %}
+                <a href="{{ url_for('delete_message', message_id=reply.id) }}">Удалить</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

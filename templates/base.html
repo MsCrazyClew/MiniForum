@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>MicroChat</title>
+    <style>
+        /* Общие настройки */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #0f0; /* Неоново-зелёный текст */
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Заголовок */
+        header {
+            background-color: #0a0a0a;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            color: #0f0;
+        }
+
+        /* Навигация */
+        nav {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        nav a, nav span {
+            color: #0f0;
+            text-decoration: none;
+            padding: 0.3rem 0.6rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: #ff0044; /* Ярко-красный при наведении */
+            border-color: #ff0044;
+            text-shadow: 0 0 8px #ff0044;
+            background-color: rgba(255, 0, 68, 0.1);
+        }
+
+        /* Flash-сообщения */
+        .flashes {
+            margin: 1.5rem 2rem;
+            padding: 1rem;
+            background-color: rgba(255, 0, 68, 0.15);
+            border: 1px solid #ff0044;
+            color: #ff0044;
+            animation: flicker 1.5s infinite alternate;
+            max-width: 600px;
+        }
+
+        .flashes div {
+            margin: 0.3rem 0;
+        }
+
+        /* Блок контента */
+        main {
+            padding: 2rem;
+        }
+
+        /* Анимации */
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                opacity: 1;
+            }
+            20%, 24%, 55% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes cursor-blink {
+            0%, 49% {
+                opacity: 1;
+            }
+            50%, 100% {
+                opacity: 0;
+            }
+        }
+
+        /* Курсор (имитация терминала) */
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background-color: #0f0;
+            margin-left: 2px;
+            animation: cursor-blink 1s infinite;
+            vertical-align: bottom;
+        }
+
+        /* Сетка заднего фона (необязательно, но добавляет деталей) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Контент-блок по умолчанию */
+        .content-box {
+            background-color: rgba(10, 10, 10, 0.7);
+            border: 1px solid #0f0;
+            padding: 1.5rem;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+
+        /* Подсветка важных элементов */
+        .highlight {
+            color: #ff0044;
+            font-weight: bold;
+        }
+
+        /* Прогрессивные улучшения */
+        @media (max-width: 600px) {
+            header {
+                padding: 1rem;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MicroChat <span class="terminal-cursor"></span></h1>
+        <nav>
+            {% if current_user %}
+                <span>Привет, <span class="highlight">{{ current_user.username }}</span>!</span>
+                <a href="{{ url_for('logout') }}">Выйти</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Войти</a>
+                <a href="{{ url_for('register') }}">Регистрация</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for message in messages %}
+                        <div>{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="content-box">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</body>
+</html>
