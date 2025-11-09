@@ -49,6 +49,9 @@ def get_current_user():
 
 
 
+@app.route('/rules')
+def rules():
+    return render_template('rules.html')
 
 
 @app.route('/')
